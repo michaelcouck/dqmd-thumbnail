@@ -40,7 +40,7 @@ public class ThumbnailScheduler {
     @Scheduled(cron = "0 0 3 * * ?") // Fires at 3am everyday
     public void generateThumbnails() {
         log.info("Starting thumbnail scheduled task : generateThumbnails");
-        thumbnailService.crawlBlob(7);
+        thumbnailService.crawlBlob();
     }
 
 }

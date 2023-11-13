@@ -38,7 +38,7 @@ public class ThumbnailWebService {
     public Thumbnail getThumbnail(@RequestParam(required = false, value = "clientId") final String clientId,
                                   @RequestParam(required = false, value = "thumbnailId") final String thumbnailId,
                                   @RequestParam(required = false, value = "thumbnailPartialName") final String thumbnailPartialName) {
-        return thumbnailService.getThumbnail(thumbnailPartialName);
+        return thumbnailService.getThumbnail(thumbnailPartialName, true);
     }
 
 

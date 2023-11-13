@@ -9,10 +9,10 @@ import com.doqmind.thumbnail.model.Thumbnail;
  */
 public interface ThumbnailService {
 
-    void crawlBlob(int depth);
+    void crawlBlob();
 
-    Thumbnail getThumbnail(final String name);
+    Thumbnail getThumbnail(final String originalAssetName, final boolean createIfNotExists);
 
-    boolean deleteThumbnail(final String name);
+    boolean deleteThumbnail(final String originalAssetName);
 
 }

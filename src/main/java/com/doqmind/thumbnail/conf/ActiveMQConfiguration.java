@@ -35,10 +35,12 @@ import java.util.HashMap;
 @Profile({"default", "dev", "test", "integration", "it", "uat", "prd"})
 public class ActiveMQConfiguration {
 
+    public static final String THUMBNAIL_TOPIC = "thumbnail.thumbnail-topic";
+
     @Value("${spring.activemq.broker-url:vm://embedded?broker.useShutdownHook=false&broker.useJmx=false&broker.persistent=false}")
     private String brokerConnection;
 
-    @Value("${thumbnail.thumbnail-topic}")
+    @Value("${" + THUMBNAIL_TOPIC +"}")
     protected String thumbnailTopicName;
 
     @Bean

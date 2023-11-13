@@ -37,13 +37,14 @@ public class ThumbnailServiceIT {
 
     @Test
     public void crawlBlob() {
-        String thumbnailName = "/mnt/sda/Workspace/doqmind/thumbnail/src/test/resources/assets/testFile1.pdf-512x.jpg";
-        thumbnailService.deleteThumbnail(thumbnailName);
-        Thumbnail thumbnail = thumbnailService.getThumbnail(thumbnailName);
+        String originalAssetName = "testFile1.pdf";
+        thumbnailService.deleteThumbnail(originalAssetName);
+        Thumbnail thumbnail = thumbnailService.getThumbnail(originalAssetName, false);
         Assertions.assertNull(thumbnail.getBlob());
 
-        thumbnailService.crawlBlob(7);
-        thumbnail = thumbnailService.getThumbnail(thumbnailName);
+        thumbnailService.crawlBlob();
+
+        thumbnail = thumbnailService.getThumbnail(originalAssetName, false);
         Assertions.assertNotNull(thumbnail.getBlob());
     }
 
