@@ -1,5 +1,6 @@
 package com.doqmind.thumbnail.conf;
 
+import com.doqmind.thumbnail.model.Asset;
 import com.doqmind.thumbnail.model.Thumbnail;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -16,7 +17,6 @@ import org.springframework.jms.support.converter.MappingJackson2MessageConverter
 import org.springframework.jms.support.converter.MessageType;
 
 import javax.jms.ConnectionFactory;
-import javax.jms.JMSException;
 import javax.jms.Topic;
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,12 +35,10 @@ import java.util.HashMap;
 @Profile({"default", "dev", "test", "integration", "it", "uat", "prd"})
 public class ActiveMQConfiguration {
 
-    public static final String THUMBNAIL_TOPIC = "thumbnail.thumbnail-topic";
-
     @Value("${spring.activemq.broker-url:vm://embedded?broker.useShutdownHook=false&broker.useJmx=false&broker.persistent=false}")
     private String brokerConnection;
 
-    @Value("${" + THUMBNAIL_TOPIC +"}")
+    @Value("${" + ConfigurationProperties.THUMBNAIL_TOPIC + "}")
     protected String thumbnailTopicName;
 
     @Bean
@@ -55,12 +53,13 @@ public class ActiveMQConfiguration {
     public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(final ConnectionFactory connectionFactory) {
         final MappingJackson2MessageConverter messageConverter = new MappingJackson2MessageConverter();
         final HashMap<String, Class<?>> typeIdMappings = new HashMap<>();
+        typeIdMappings.put("Asset", Asset.class);
         typeIdMappings.put("Thumbnail", Thumbnail.class);
         messageConverter.setTypeIdPropertyName("typeId");
         messageConverter.setTypeIdMappings(typeIdMappings);
 
         DefaultJmsListenerContainerFactory defaultJmsListenerContainerFactory = new DefaultJmsListenerContainerFactory();
-        sharedConnectionSingleConsumer(connectionFactory, defaultJmsListenerContainerFactory);
+        // sharedConnectionSingleConsumer(connectionFactory, defaultJmsListenerContainerFactory);
         defaultJmsListenerContainerFactory.setPubSubDomain(true);
         defaultJmsListenerContainerFactory.setMessageConverter(messageConverter);
         defaultJmsListenerContainerFactory.setConnectionFactory(connectionFactory);
@@ -78,12 +77,12 @@ public class ActiveMQConfiguration {
         return jmsTemplate;
     }
 
-    public Topic getThumbnailTopic() throws JMSException {
+    public Topic getThumbnailTopic() {
         return new ActiveMQTopic(thumbnailTopicName);
     }
 
-    protected void sharedConnectionSingleConsumer(final ConnectionFactory connectionFactory,
+    /*protected void sharedConnectionSingleConsumer(final ConnectionFactory connectionFactory,
                                                   final DefaultJmsListenerContainerFactory defaultJmsListenerContainerFactory) {
         //no need to do anything - this is only used for local profiles
-    }
+    }*/
 }
