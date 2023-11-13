@@ -53,9 +53,8 @@ public class FileUploadListenerIT {
         Thumbnail thumbnail = thumbnailService.getThumbnail(originalAssetName, false);
         Assertions.assertNull(thumbnail.getBlob());
 
-        Asset asset = Asset.builder().name(originalAssetName).build();
-
         // Put a message on the thumbnail topic
+        Asset asset = Asset.builder().name(originalAssetName).build();
         jmsTemplate.convertAndSend(activeMQConfiguration.getThumbnailTopic(), asset, message -> {
             message.setJMSCorrelationID(UUID.randomUUID().toString());
             message.setStringProperty("typeId", Asset.class.getSimpleName());
