@@ -1,23 +1,24 @@
 package com.doqmind.thumbnail.service;
 
 import com.doqmind.thumbnail.ThumbnailApp;
-import com.doqmind.thumbnail.database.ThumbnailRepository;
+import com.doqmind.thumbnail.model.Thumbnail;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.net.ssl.SSLContext;
 import java.security.KeyManagementException;
@@ -42,9 +43,6 @@ public class ThumbnailWebServiceIT {
     @SuppressWarnings("FieldCanBeLocal")
     private RestTemplate restTemplate;
 
-    @Autowired
-    private ThumbnailRepository thumbnailRepository;
-
     @BeforeEach
     public void before() throws Exception {
         restTemplate = createRestTemplate();
@@ -62,7 +60,13 @@ public class ThumbnailWebServiceIT {
 
     @Test
     public void getThumbnail() {
-        // Bla...
+        String url = UriComponentsBuilder.fromHttpUrl("http://localhost:" + port + "/api/thumbnail")
+                .queryParam("clientId", "clientId")
+                .queryParam("originalAssetName", "testFile1.pdf")
+                .build()
+                .toString();
+        Thumbnail thumbnail = restTemplate.getForEntity(url, Thumbnail.class).getBody();
+        Assertions.assertNotNull(thumbnail);
     }
 
 }

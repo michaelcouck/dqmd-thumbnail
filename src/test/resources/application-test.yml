@@ -24,7 +24,9 @@ spring:
   jms:
     pub-sub-domain: true
   activemq:
-    broker-url: vm://embedded?broker.persistent=false,useShutdownHook=false
+    # vm://embedded?broker.useShutdownHook=false&broker.useJmx=false&broker.persistent=false
+    # broker-url: vm://embedded?broker.persistent=false,useShutdownHook=false
+    broker-url: tcp://localhost:61616
     in-memory: true
     non-blocking-redelivery: true
     pool:
@@ -33,7 +35,8 @@ spring:
       enabled: false
       idle-timeout: 30000
       max-connections: 1
-      maximum-active-session-per-connection: 500
+      pool:
+        max-sessions-per-connection: 500
       time-between-expiration-check: -1
       use-anonymous-producers: true
 thumbnail:

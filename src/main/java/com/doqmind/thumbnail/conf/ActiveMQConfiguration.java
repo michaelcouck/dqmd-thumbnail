@@ -35,7 +35,7 @@ import java.util.HashMap;
 @Profile({"default", "dev", "test", "integration", "it", "uat", "prd"})
 public class ActiveMQConfiguration {
 
-    @Value("${spring.activemq.broker-url:vm://embedded?broker.useShutdownHook=false&broker.useJmx=false&broker.persistent=false}")
+    @Value("${spring.activemq.broker-url}")
     private String brokerConnection;
 
     @Value("${" + ConfigurationProperties.THUMBNAIL_TOPIC + "}")
@@ -59,7 +59,6 @@ public class ActiveMQConfiguration {
         messageConverter.setTypeIdMappings(typeIdMappings);
 
         DefaultJmsListenerContainerFactory defaultJmsListenerContainerFactory = new DefaultJmsListenerContainerFactory();
-        // sharedConnectionSingleConsumer(connectionFactory, defaultJmsListenerContainerFactory);
         defaultJmsListenerContainerFactory.setPubSubDomain(true);
         defaultJmsListenerContainerFactory.setMessageConverter(messageConverter);
         defaultJmsListenerContainerFactory.setConnectionFactory(connectionFactory);
@@ -81,8 +80,4 @@ public class ActiveMQConfiguration {
         return new ActiveMQTopic(thumbnailTopicName);
     }
 
-    /*protected void sharedConnectionSingleConsumer(final ConnectionFactory connectionFactory,
-                                                  final DefaultJmsListenerContainerFactory defaultJmsListenerContainerFactory) {
-        //no need to do anything - this is only used for local profiles
-    }*/
 }

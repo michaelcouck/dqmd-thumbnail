@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Collection;
 
 /**
@@ -32,13 +33,13 @@ public class ThumbnailWebService {
     }
 
     @ResponseBody
-    @PreAuthorize("#clientId == authentication.principal")
+    @SuppressWarnings({"DefaultAnnotationParam", "unused"})
+    // @PreAuthorize("#clientId == authentication.principal")
     @GetMapping(value = THUMBNAIL, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Get the thumbnail by id", notes = "Bla...", response = Collection.class)
-    public Thumbnail getThumbnail(@RequestParam(required = false, value = "clientId") final String clientId,
-                                  @RequestParam(required = false, value = "thumbnailId") final String thumbnailId,
-                                  @RequestParam(required = false, value = "thumbnailPartialName") final String thumbnailPartialName) {
-        return thumbnailService.getThumbnail(thumbnailPartialName, true);
+    @ApiOperation(value = "Get the thumbnail by original asset name", notes = "Bla...", response = Thumbnail.class)
+    public Thumbnail getThumbnail(@RequestParam(required = true, value = "clientId") final String clientId,
+                                  @RequestParam(required = true, value = "originalAssetName") final String originalAssetName) throws IOException, InterruptedException {
+        return thumbnailService.getThumbnail(originalAssetName, true);
     }
 
 

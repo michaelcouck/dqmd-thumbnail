@@ -13,6 +13,8 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.io.IOException;
+
 /**
  * @author Michael Couck
  * @version 1.0
@@ -24,9 +26,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ActiveProfiles({"test"})
 public class ThumbnailServiceIT {
 
-    @LocalServerPort
+    /*@LocalServerPort
     @SuppressWarnings("unused")
-    private int port;
+    private int port;*/
 
     @Autowired
     private ThumbnailService thumbnailService;
@@ -36,7 +38,7 @@ public class ThumbnailServiceIT {
     }
 
     @Test
-    public void crawlBlob() {
+    public void crawlBlob() throws IOException, InterruptedException {
         String originalAssetName = "testFile1.pdf";
         thumbnailService.deleteThumbnail(originalAssetName);
         Thumbnail thumbnail = thumbnailService.getThumbnail(originalAssetName, false);

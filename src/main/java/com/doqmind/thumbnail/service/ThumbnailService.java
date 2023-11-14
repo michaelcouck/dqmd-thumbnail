@@ -2,6 +2,8 @@ package com.doqmind.thumbnail.service;
 
 import com.doqmind.thumbnail.model.Thumbnail;
 
+import java.io.IOException;
+
 /**
  * @author Michael Couck
  * @version 1.0
@@ -11,7 +13,7 @@ public interface ThumbnailService {
 
     void crawlBlob();
 
-    Thumbnail getThumbnail(final String originalAssetName, final boolean createIfNotExists);
+    Thumbnail getThumbnail(final String originalAssetName, final boolean createIfNotExists) throws IOException, InterruptedException;
 
     boolean deleteThumbnail(final String originalAssetName);
 

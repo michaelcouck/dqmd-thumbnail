@@ -9,6 +9,7 @@ import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.common.StorageSharedKeyCredential;
 import com.doqmind.thumbnail.database.ThumbnailRepository;
 import com.doqmind.thumbnail.model.Thumbnail;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,9 +51,10 @@ public class ThumbnailServiceImpl implements ThumbnailService {
     }
 
     @Override
-    public Thumbnail getThumbnail(final String originalAssetName, final boolean createIfNotExists) {
+    public Thumbnail getThumbnail(final String originalAssetName, final boolean createIfNotExists) throws IOException, InterruptedException {
+        String thumbnailName = originalAssetName + THUMBNAIL_SUFFIX;
         BlobContainerClient blobContainerClient = getBlobContainerClient();
-        BlobClient thumbnailBlobClient = blobContainerClient.getBlobClient(originalAssetName + THUMBNAIL_SUFFIX);
+        BlobClient thumbnailBlobClient = blobContainerClient.getBlobClient(thumbnailName);
         if (!thumbnailBlobClient.exists() & createIfNotExists) {
             BlobClient assetBlobClient = blobContainerClient.getBlobClient(originalAssetName);
             if (assetBlobClient.exists()) {
@@ -63,14 +65,7 @@ public class ThumbnailServiceImpl implements ThumbnailService {
         }
         if (thumbnailBlobClient.exists()) {
             InputStream inputStream = thumbnailBlobClient.openInputStream();
-            try {
-                return Thumbnail
-                        .builder()
-                        .blob(inputStream.readAllBytes())
-                        .build();
-            } catch (final IOException e) {
-                log.error("Error reading from thumbnail in blob storage: " + originalAssetName, e);
-            }
+            return Thumbnail.builder().name(thumbnailName).blob(inputStream.readAllBytes()).build();
         }
         return Thumbnail.builder().build();
     }
@@ -89,6 +84,7 @@ public class ThumbnailServiceImpl implements ThumbnailService {
         final BlobContainerClient blobContainerClient = getBlobContainerClient();
         PagedIterable<BlobItem> blobItems = blobContainerClient.listBlobs();
         blobItems.forEach(new Consumer<BlobItem>() {
+            @SneakyThrows
             @Override
             public void accept(final BlobItem blobItem) {
                 BlobClient blobClient = blobContainerClient.getBlobClient(blobItem.getName());
@@ -97,22 +93,18 @@ public class ThumbnailServiceImpl implements ThumbnailService {
         });
     }
 
-    private void generateThumbnail(final BlobContainerClient blobContainerClient, final BlobClient blobClient) {
+    private void generateThumbnail(final BlobContainerClient blobContainerClient, final BlobClient blobClient) throws IOException, InterruptedException {
         log.info("Blob file: " + blobClient.getBlobName());
         if (!blobClient.getBlobName().endsWith("jpg")) {
             File downloadedFile = new File(blobClient.getBlobName());
             String thumbnailName = blobClient.getBlobName() + THUMBNAIL_SUFFIX;
 
             BlobClient thumbnailBlobClient = blobContainerClient.getBlobClient(thumbnailName);
-            try {
-                if (!thumbnailBlobClient.exists()) {
-                    downloadBlobFile(downloadedFile, blobClient);
-                    generateThumbnail(thumbnailName, downloadedFile, thumbnailBlobClient);
-                } else {
-                    log.info("Thumbnail already generated: " + thumbnailName);
-                }
-            } catch (final IOException | InterruptedException e) {
-                log.error("Error generating & uploading thumbnail: " + thumbnailName, e);
+            if (!thumbnailBlobClient.exists()) {
+                downloadBlobFile(downloadedFile, blobClient);
+                generateThumbnail(thumbnailName, downloadedFile, thumbnailBlobClient);
+            } else {
+                log.info("Thumbnail already generated: " + thumbnailName);
             }
             boolean deleted = FileUtils.deleteQuietly(downloadedFile);
             if (!deleted) {
@@ -141,12 +133,15 @@ public class ThumbnailServiceImpl implements ThumbnailService {
     private void generateThumbnail(final String thumbnailName, final File downloadedFile, final BlobClient thumbnailBlobClient) throws InterruptedException, IOException {
         log.info("Generating thumbnail: " + thumbnailName);
         Runtime runtime = Runtime.getRuntime();
-        Process process = runtime.exec("convert -thumbnail x512 -background white -alpha remove " + downloadedFile.getAbsolutePath() + "[0] " + thumbnailName);
+        Process process = null;
+        process = runtime.exec("convert -thumbnail x512 -background white -alpha remove " + downloadedFile.getAbsolutePath() + "[0] " + thumbnailName);
         int exitValue = process.waitFor();
         log.info("Process exit value for thumbnail generation: " + exitValue);
 
-        log.info("Uploading thumbnail: " + downloadedFile);
-        thumbnailBlobClient.upload(new FileInputStream(thumbnailName));
+        log.info("Uploading thumbnail: " + thumbnailName);
+        try (FileInputStream fileInputStrem = new FileInputStream(thumbnailName)) {
+            thumbnailBlobClient.upload(fileInputStrem);
+        }
         boolean deletedThumbnailFile = FileUtils.deleteQuietly(new File(thumbnailName));
         if (!deletedThumbnailFile) {
             log.warn("Didn't delete thumbnail locally: " + thumbnailName);

@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 
 /**
  * @author Michael Couck
@@ -18,6 +20,7 @@ import javax.transaction.Transactional;
  */
 @Slf4j
 @Service
+@EnableTransactionManagement
 public class FileUploadListener {
 
     @Value("${" + ConfigurationProperties.THUMBNAIL_TOPIC + "}")
@@ -36,7 +39,7 @@ public class FileUploadListener {
             containerFactory = "jmsListenerContainerFactory",
             selector = "typeId='Asset'",
             subscription = "thumbnail-topic")
-    public void generateThumbnailForAsset(@Payload final Asset asset) {
+    public void generateThumbnailForAsset(@Payload final Asset asset) throws IOException, InterruptedException {
         // Generate the thumbnail for the asset
         thumbnailService.getThumbnail(asset.getName(), Boolean.TRUE);
     }

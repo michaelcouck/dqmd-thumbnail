@@ -17,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.jms.JMSException;
+import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
@@ -47,7 +48,7 @@ public class FileUploadListenerIT {
     }
 
     @Test
-    public void generateThumbnailForAsset() throws JMSException, InterruptedException {
+    public void generateThumbnailForAsset() throws JMSException, InterruptedException, IOException {
         String originalAssetName = "testFile1.pdf";
         thumbnailService.deleteThumbnail(originalAssetName);
         Thumbnail thumbnail = thumbnailService.getThumbnail(originalAssetName, false);
