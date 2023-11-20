@@ -6,7 +6,6 @@ import com.doqmind.thumbnail.model.Asset;
 import com.doqmind.thumbnail.model.Thumbnail;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +15,8 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import javax.jms.JMSException;
 import java.io.IOException;
 import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * @author Michael Couck
@@ -43,12 +40,8 @@ public class FileUploadListenerIT {
     @Autowired
     private ThumbnailService thumbnailService;
 
-    @BeforeEach
-    public void before() {
-    }
-
     @Test
-    public void generateThumbnailForAsset() throws JMSException, InterruptedException, IOException {
+    public void generateThumbnailForAsset() throws InterruptedException, IOException {
         String originalAssetName = "testFile1.pdf";
         thumbnailService.deleteThumbnail(originalAssetName);
         Thumbnail thumbnail = thumbnailService.getThumbnail(originalAssetName, false);

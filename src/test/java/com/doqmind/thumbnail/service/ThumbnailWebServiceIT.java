@@ -60,9 +60,9 @@ public class ThumbnailWebServiceIT {
 
     @Test
     public void getThumbnail() {
-        String url = UriComponentsBuilder.fromHttpUrl("http://localhost:" + port + "/api/thumbnail")
-                .queryParam("clientId", "clientId")
-                .queryParam("originalAssetName", "testFile1.pdf")
+        String url = UriComponentsBuilder.fromHttpUrl("http://localhost:" + port + "/doqmind/" + ThumbnailWebService.THUMBNAIL)
+                .queryParam("client-id", "client-id")
+                .queryParam("original-asset-name", "testFile1.pdf")
                 .build()
                 .toString();
         Thumbnail thumbnail = restTemplate.getForEntity(url, Thumbnail.class).getBody();

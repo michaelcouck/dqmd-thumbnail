@@ -23,7 +23,7 @@ import java.util.Collection;
 @Api(value = "thumbnail-service", tags = {"Endpoint to access thumbnails"})
 public class ThumbnailWebService {
 
-    public static final String THUMBNAIL = "/thumbnail";
+    public static final String THUMBNAIL = "/get-thumbnail";
 
     private final ThumbnailService thumbnailService;
 
@@ -37,10 +37,10 @@ public class ThumbnailWebService {
     // @PreAuthorize("#clientId == authentication.principal")
     @GetMapping(value = THUMBNAIL, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get the thumbnail by original asset name", notes = "Bla...", response = Thumbnail.class)
-    public Thumbnail getThumbnail(@RequestParam(required = true, value = "clientId") final String clientId,
-                                  @RequestParam(required = true, value = "originalAssetName") final String originalAssetName) throws IOException, InterruptedException {
+    public Thumbnail getThumbnail(@RequestParam(required = true, value = "client-id") final String clientId,
+                                  @RequestParam(required = true, value = "original-asset-name") final String originalAssetName)
+            throws IOException, InterruptedException {
         return thumbnailService.getThumbnail(originalAssetName, true);
     }
-
 
 }

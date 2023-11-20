@@ -3,7 +3,7 @@ server:
   ssl:
     enabled: false
   servlet:
-    context-path: /api
+    context-path: /doqmind
 logging:
   config: classpath:logback-test.xml
 spring:
