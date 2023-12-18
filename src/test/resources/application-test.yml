@@ -24,9 +24,7 @@ spring:
   jms:
     pub-sub-domain: true
   activemq:
-    # vm://embedded?broker.useShutdownHook=false&broker.useJmx=false&broker.persistent=false
-    # broker-url: vm://embedded?broker.persistent=false,useShutdownHook=false
-    broker-url: tcp://localhost:61616
+    broker-url: vm://embedded?broker.persistent=false,useShutdownHook=false
     in-memory: true
     non-blocking-redelivery: true
     pool:

@@ -4,7 +4,6 @@ import com.doqmind.thumbnail.database.ThumbnailRepository;
 import com.doqmind.thumbnail.service.ThumbnailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -40,7 +39,7 @@ public class ThumbnailScheduler {
     @Scheduled(cron = "0 0 3 * * ?") // Fires at 3am everyday
     public void generateThumbnails() {
         log.info("Starting thumbnail scheduled task : generateThumbnails");
-        thumbnailService.crawlBlob();
+        thumbnailService.generateThumbnails();
     }
 
 }

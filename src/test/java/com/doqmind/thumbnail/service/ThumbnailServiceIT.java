@@ -4,7 +4,6 @@ import com.doqmind.thumbnail.ThumbnailApp;
 import com.doqmind.thumbnail.model.Thumbnail;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,21 +27,17 @@ public class ThumbnailServiceIT {
     @Autowired
     private ThumbnailService thumbnailService;
 
-    @BeforeEach
-    public void before() {
-    }
-
     @Test
-    public void crawlBlob() throws IOException, InterruptedException {
-        String originalAssetName = "testFile1.pdf";
-        thumbnailService.deleteThumbnail(originalAssetName);
-        Thumbnail thumbnail = thumbnailService.getThumbnail(originalAssetName, false);
-        Assertions.assertNull(thumbnail.getBlob());
+    public void getThumbnail() throws IOException, InterruptedException {
+        String[] testFiles = {"testFile1.pdf", "testFile4.pdf", "testFile99.pdf", "testFile101.pdf"};
+        for (final String assetName : testFiles) {
+            thumbnailService.deleteThumbnail(assetName);
+            Thumbnail thumbnail = thumbnailService.getThumbnail(assetName, false);
+            Assertions.assertNull(thumbnail.getBlob());
 
-        thumbnailService.crawlBlob();
-
-        thumbnail = thumbnailService.getThumbnail(originalAssetName, false);
-        Assertions.assertNotNull(thumbnail.getBlob());
+            thumbnail = thumbnailService.getThumbnail(assetName, true);
+            Assertions.assertNotNull(thumbnail.getBlob());
+        }
     }
 
 }

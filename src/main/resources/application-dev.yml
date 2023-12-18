@@ -1,9 +1,9 @@
 server:
-  port: 8449
+  port: 80
   ssl:
     enabled: false
   servlet:
-    context-path: /doqmind
+    context-path: /api
   max-http-header-size: 1000000
 logging:
   config: classpath:logback.xml
@@ -12,11 +12,11 @@ spring:
     name: thumbnail
   profiles: dev,test
   datasource:
-    url: jdbc:mysql://localhost:3306/doqmind
-    username: root
-    password: caherline
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    dialect: org.hibernate.dialect.MySQL8Dialect
+    url: jdbc:h2:file:./db/doqmind;INIT=CREATE SCHEMA IF NOT EXISTS DOQMIND
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+    dialect: "org.hibernate.dialect.H2Dialect"
   jpa:
     hibernate:
       ddl-auto: update
@@ -24,8 +24,7 @@ spring:
   jms:
     pub-sub-domain: true
   activemq:
-    # broker-url: vm://embedded?broker.persistent=false,useShutdownHook=false
-    broker-url: tcp://localhost:61616
+    broker-url: vm://embedded?broker.persistent=false,useShutdownHook=false
     in-memory: true
     non-blocking-redelivery: true
     pool:
@@ -34,7 +33,6 @@ spring:
       enabled: false
       idle-timeout: 30000
       max-connections: 1
-      # maximum-active-session-per-connection: 500
       pool:
         max-sessions-per-connection: 500
       time-between-expiration-check: -1

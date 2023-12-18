@@ -11,7 +11,7 @@ import java.io.IOException;
  */
 public interface ThumbnailService {
 
-    void crawlBlob();
+    void generateThumbnails();
 
     Thumbnail getThumbnail(final String originalAssetName, final boolean createIfNotExists) throws IOException, InterruptedException;
 
