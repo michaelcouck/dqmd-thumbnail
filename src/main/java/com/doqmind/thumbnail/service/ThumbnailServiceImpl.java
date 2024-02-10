@@ -44,7 +44,6 @@ public class ThumbnailServiceImpl implements ThumbnailService {
     @Value("${thumbnail.container}")
     private String container;
 
-
     private BlobServiceClient blobServiceClient;
     private BlobContainerClient blobContainerClient;
 
@@ -109,7 +108,8 @@ public class ThumbnailServiceImpl implements ThumbnailService {
             BlobClient thumbnailBlobClient = blobContainerClient.getBlobClient(thumbnailName);
             if (!thumbnailBlobClient.exists()) {
                 downloadBlobFile(downloadedFile, blobClient);
-                generateThumbnail(thumbnailName, downloadedFile, thumbnailBlobClient);
+                generateThumbnail(thumbnailName, downloadedFile);
+                uploadThumbnail(thumbnailName, thumbnailBlobClient);
             } else {
                 log.info("Thumbnail already generated: " + thumbnailName);
             }
@@ -138,7 +138,7 @@ public class ThumbnailServiceImpl implements ThumbnailService {
         }
     }
 
-    private void generateThumbnail(final String thumbnailName, final File downloadedFile, final BlobClient thumbnailBlobClient) throws InterruptedException, IOException {
+    private void generateThumbnail(final String thumbnailName, final File downloadedFile) throws InterruptedException, IOException {
         log.info("Generating thumbnail: " + thumbnailName);
         final Runtime runtime = Runtime.getRuntime();
         final Process process = runtime.exec("convert -thumbnail x512 -background white -alpha remove " + downloadedFile.getAbsolutePath() + "[0] " + thumbnailName);
@@ -148,7 +148,9 @@ public class ThumbnailServiceImpl implements ThumbnailService {
         if (process.isAlive()) {
             process.destroyForcibly();
         }
+    }
 
+    private void uploadThumbnail(final String thumbnailName, final BlobClient thumbnailBlobClient) throws IOException {
         File thumbnailFile = new File(thumbnailName);
         if (thumbnailFile.exists()) {
             log.info("Uploading thumbnail: " + thumbnailName);
